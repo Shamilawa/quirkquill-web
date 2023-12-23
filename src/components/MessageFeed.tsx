@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ISingleMessageType, USER_ROLE } from '../App';
 import EmtpyStateImage from '../assets/undraw_Typing_re_d4sq.png';
 import ReactMarkdown from 'react-markdown';
@@ -13,12 +13,19 @@ interface IMessageFeedProps {
 }
 
 export const MessageFeed = ({ messageHistory }: IMessageFeedProps) => {
-    const messageFeedRef = useRef<any>();
+    const scrollContainerRef = useRef<any>();
 
-    const springProps = useSpring({
-        from: { opacity: 0, transform: 'translateY(100%)' },
-        to: { opacity: 1, transform: 'translateY(0%)' },
-    });
+    useEffect(() => {
+        // Scroll to the bottom when the component mounts or when its content changes
+        scrollToBottom();
+    }, [messageHistory]);
+
+    const scrollToBottom = () => {
+        if (scrollContainerRef.current) {
+            // Scroll to the bottom
+            scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+        }
+    };
 
     return (
         <>
@@ -37,7 +44,7 @@ export const MessageFeed = ({ messageHistory }: IMessageFeedProps) => {
                 </div>
             ) : (
                 <div
-                    ref={messageFeedRef}
+                    ref={scrollContainerRef}
                     className="chat-body overflow-y-scroll max-w-[70%] px-12 min-w-[70%] sm:max-w-[100%] sm:min-w-[100%] sm:px-3 flex-grow"
                 >
                     {messageHistory.length > 0 &&
